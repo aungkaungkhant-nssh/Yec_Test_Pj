@@ -12,11 +12,9 @@ export class BookController {
     ){}
 
     @Get()
-    getAllBooks(  
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('limit', ParseIntPipe) limit: number =2)
+    getAllBooks(@Query() query)
     {
-        return this.bookService.getBooks(page,limit)
+        return this.bookService.getBooks(query)
     }
 
     @Post()

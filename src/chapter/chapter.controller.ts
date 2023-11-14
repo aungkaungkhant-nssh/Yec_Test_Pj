@@ -8,9 +8,9 @@ export class ChapterController {
         private chapterService:ChapterService
     ){}
 
-    @Get()
-    getChapters(){
-        return this.chapterService.getChapters();
+    @Get("/book/:bookId")
+    getChapters(@Param("bookId",ParseIntPipe) bookId:number){
+        return this.chapterService.getChapters(bookId);
     }
 
     @Post()

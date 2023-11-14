@@ -13,18 +13,21 @@ export class BookService {
     ){}
 
 
-    async getBooks(page:number,limit:number){
-      return this.bookRepository.find({
-        relations:["chapters"],
-        take: limit,
-        skip: (page - 1) * limit,
-      })
+    async getBooks({limit="2",page="1",title="",author=""}:any){
+
+      const queryBuilder =   this.bookRepository.createQueryBuilder("books")
+
+      if(title) queryBuilder.where("books.title Like :searchTerm",{ searchTerm: `%${title}%` })
+      if(author) queryBuilder.where("books.author Like :searchTerm",{ searchTerm: `%${author}%` })
+
+      return await queryBuilder.skip((parseInt(page) - 1) * parseInt(page))
+      .take(+limit)
+      .getManyAndCount();
+      
       
     }
     async getBook(id:number){
-      const book = await this.bookRepository.findOneBy({id});
-      if(!book) throw new NotFoundException("Book not found");
-      return book;
+      return  await this.bookRepository.findOneByOrFail({id});
     }
 
     createBook(book:bookDto){
@@ -35,7 +38,7 @@ export class BookService {
     
     async deleteBook(id:number){
 
-        const book = await this.bookRepository.findOneBy({id})
+        const book = await this.bookRepository.findOneByOrFail({id})
         deleteImage(`./${book.image}`)
 
         return this.bookRepository.delete({id})

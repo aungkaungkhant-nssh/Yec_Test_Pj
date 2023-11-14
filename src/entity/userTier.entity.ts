@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { UserTierEnum } from 'src/entity/enum/user_tier.enum';
+import { Entity, Column, PrimaryGeneratedColumn,  } from 'typeorm';
 @Entity()
 export class UserTier{
     @PrimaryGeneratedColumn()
@@ -7,9 +8,7 @@ export class UserTier{
     @Column()
     tier:string
 
-    @Column({
-        default:"pending"
-    })
-    status:"accept" | "reject" | "pending"
+    @Column({ type: 'enum', enum: UserTierEnum, default: UserTierEnum.Pending })
+    status:UserTierEnum
 
 }

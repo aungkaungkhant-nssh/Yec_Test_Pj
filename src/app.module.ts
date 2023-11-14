@@ -11,6 +11,9 @@ import { ChapterController } from './chapter/chapter.controller';
 import { ChapterModule } from './chapter/chapter.module';
 import { Chapter } from './entity/chapter.entity';
 import { UserTier } from './entity/userTier.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/roles.guard';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -27,10 +30,16 @@ import { UserTier } from './entity/userTier.entity';
     UserModule,
     BookModule,
     ChapterModule,
+    AuthModule,
   
   
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import * as argon2 from "argon2";
 import { JwtService } from '@nestjs/jwt';
 import { UserTier } from 'src/entity/userTier.entity';
+import { UserTierEnum } from '../entity/enum/user_tier.enum';
+import { UserRole } from 'src/entity/enum/user_role.enum';
 
 
 @Injectable()
@@ -19,6 +21,7 @@ export class UserService {
     ){}
 
     async signUp(email:string,password:string){
+    
        const hashPassword = await  argon2.hash(password);
        const newUser =  this.userRepository.create({email:email,password:hashPassword});
        return this.userRepository.save(newUser)
@@ -42,7 +45,7 @@ export class UserService {
     async upgradeTierReq(id:number,reqTier:string){
         const user =  await this.userRepository.findOneBy({id});
         if(!user) throw new NotFoundException("User not found");
-         const newTier =  this.userTierRepository.create({status:"pending",tier:reqTier});
+         const newTier =  this.userTierRepository.create({status:UserTierEnum.Pending,tier:reqTier});
          const saveTier = await this.userTierRepository.save(newTier);
          user.tier = saveTier;
          return this.userRepository.save(user)
@@ -58,13 +61,12 @@ export class UserService {
     }
 
 
-    async upgradeTierRes(id:number,status:"accept" | "reject"){
+    async upgradeTierRes(id:number,status:UserTierEnum){
         const user =  await this.userRepository.find({where:{id},relations:["tier"]});
      
         if(!user) throw new NotFoundException("User not found");
 
         const tierId = user[0].tier.id;
-
        return this.userTierRepository.update({id:tierId},{status})
         
     }
