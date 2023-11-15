@@ -19,13 +19,28 @@ export class BookService {
       if(title) queryBuilder.where("books.title Like :searchTerm",{ searchTerm: `%${title}%` })
       if(author) queryBuilder.where("books.author Like :searchTerm",{ searchTerm: `%${author}%` })
 
-      return await queryBuilder
+      const [books,total]  = await queryBuilder
       .leftJoinAndSelect("books.chapters","chapter")
       .skip((parseInt(page) - 1) * parseInt(page))
       .take(+limit)
      
       .getManyAndCount();
       
+      const totalPages = Math.ceil(total / +limit);
+      const hasNextPage = +page < totalPages
+      const hasPrevPage = +page > 1;
+      
+      return {
+        data:books,
+        pagination:{
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+          totalItems:total,
+          itemsPerPage : +limit,
+          currentPage:+page
+        }
+      }
       
     }
     async getBook(id:number){
