@@ -12,12 +12,8 @@ export class RolesGuard  implements CanActivate{
       return true; // No roles defined, allow access
     }
 
-    // const request = context.switchToHttp().getRequest();
-    const user = {
-      email:"akkgit0909@gmail.com",
-      roles:UserRole.USER
-
-    }
+    const {user} = context.switchToHttp().getRequest();
+  
     return roles.some((role)=> role === user.roles)
     }
 }

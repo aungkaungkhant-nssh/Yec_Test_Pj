@@ -1,8 +1,12 @@
-import { Controller, Delete, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors,Put,Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors,Put,Query, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Body } from '@nestjs/common';
 import { BookService } from './book.service';
+import { Roles } from 'src/auth/roles.docorator';
+import { UserRole } from 'src/entity/enum/user_role.enum';
+import { JwtGuard } from 'src/auth/jwt.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
 
 
 @Controller('book')
@@ -11,12 +15,17 @@ export class BookController {
         private bookService :BookService
     ){}
 
+
+    
     @Get()
-    getAllBooks(@Query() query)
+    getAllBooks(@Query() query:any)
     {
         return this.bookService.getBooks(query)
     }
 
+
+    @Roles(UserRole.ADMIN)
+    @UseGuards(JwtGuard,RolesGuard)
     @Post()
     @UseInterceptors(
     FileInterceptor('file', { storage: diskStorage({
@@ -34,6 +43,8 @@ export class BookController {
     }
 
 
+    @Roles(UserRole.ADMIN)
+    @UseGuards(JwtGuard,RolesGuard)
     @Delete(":id")
     deleteBook(@Param("id",ParseIntPipe) id:number){
         return this.bookService.deleteBook(id)
@@ -44,6 +55,8 @@ export class BookController {
         return this.bookService.getBook(id)
     }
 
+    @Roles(UserRole.ADMIN)
+    @UseGuards(JwtGuard,RolesGuard)
     @Put(":id")
     @UseInterceptors(
         FileInterceptor('file', { storage: diskStorage({

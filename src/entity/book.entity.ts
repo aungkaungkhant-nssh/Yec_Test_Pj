@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Chapter } from './chapter.entity';
+import { ActiveStatusEnum, FreeStatusEnum } from './enum/status.enum';
 
 @Entity()
 export class Book{
@@ -18,11 +19,17 @@ export class Book{
     @Column() 
     duration:string
 
-    @Column()
-    active_status: "draft" | "active"
+    @Column({
+        type:"enum",
+        enum:ActiveStatusEnum, 
+    })
+    active_status: ActiveStatusEnum
 
-    @Column()
-    free_status:"free" | "premium"
+    @Column({
+        type:"enum",
+        enum:FreeStatusEnum
+    })
+    free_status:FreeStatusEnum
 
     @OneToMany(() => Chapter, (chapter) => chapter.book)
     chapters : Chapter[]

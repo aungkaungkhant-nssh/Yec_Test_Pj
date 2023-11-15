@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from 'src/entity/book.entity';
 import { Repository } from 'typeorm';
-import { bookDto } from './dto/bookDto';
 import { deleteImage } from 'src/util/deleteImage';
 
 @Injectable()
@@ -20,8 +19,11 @@ export class BookService {
       if(title) queryBuilder.where("books.title Like :searchTerm",{ searchTerm: `%${title}%` })
       if(author) queryBuilder.where("books.author Like :searchTerm",{ searchTerm: `%${author}%` })
 
-      return await queryBuilder.skip((parseInt(page) - 1) * parseInt(page))
+      return await queryBuilder
+      .leftJoinAndSelect("books.chapters","chapter")
+      .skip((parseInt(page) - 1) * parseInt(page))
       .take(+limit)
+     
       .getManyAndCount();
       
       
@@ -30,7 +32,7 @@ export class BookService {
       return  await this.bookRepository.findOneByOrFail({id});
     }
 
-    createBook(book:bookDto){
+    createBook(book:any){
       const newBook =   this.bookRepository.create(book);
       return  this.bookRepository.save(newBook);
     }

@@ -16,6 +16,7 @@ export class UserController {
 
 
     @Roles(UserRole.USER)
+    @UseGuards(JwtGuard,RolesGuard)
     @Post(":id/upgradeReq")
     upgradeTierReq(@Param("id",ParseIntPipe) id:number, @Body() body:any){
         return this.userService.upgradeTierReq(id,body.tier)
@@ -25,9 +26,9 @@ export class UserController {
 
   
     @Roles(UserRole.ADMIN)
+    @UseGuards(JwtGuard,RolesGuard)
     @Get("/tiers")
     upgradeTierList(@Request() req:any){
-        console.log(req.user)
         return this.userService.upgradeTierList()
     }
 
