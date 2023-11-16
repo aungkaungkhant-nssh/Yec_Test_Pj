@@ -1,4 +1,4 @@
-import { Body, Controller,Post } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller,Post, UseInterceptors } from '@nestjs/common';
 import { userDto } from './dto/userDto';
 import { AuthService } from './auth.service';
 
@@ -9,7 +9,10 @@ export class AuthController {
     ){
 
     }
+
+    @UseInterceptors(ClassSerializerInterceptor)
     @Post("/signup")
+   
     signUp(@Body() userDto:userDto){
  
      return  this.authService.signUp(userDto.email,userDto.password)  

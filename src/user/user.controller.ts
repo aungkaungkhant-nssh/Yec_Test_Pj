@@ -3,10 +3,9 @@ import { userDto } from './dto/userDto';
 import { UserService } from './user.service';
 import { UserRole } from 'src/entity/enum/user_role.enum';
 import { Roles } from '../auth/roles.docorator';
-import { AuthGuard } from '../auth/auth.guard';
 import { JwtGuard } from '../auth/jwt.guard';
 import { RolesGuard } from '../auth/roles.guard';
-;
+
 @Controller('user')
 export class UserController {
     constructor(
