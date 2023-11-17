@@ -5,8 +5,9 @@ import { Repository } from 'typeorm';
 import * as argon2 from "argon2";
 import { JwtService } from '@nestjs/jwt';
 import { UserTier } from 'src/entity/userTier.entity';
-import { UserTierEnum } from '../entity/enum/user_tier.enum';
+import { UserTierEnum, UserTierStatusEnum } from '../entity/enum/user_tier.enum';
 import { UserRole } from 'src/entity/enum/user_role.enum';
+import { UserDto } from './dto/user.dto';
 
 
 @Injectable()
@@ -42,13 +43,13 @@ export class UserService {
     }
 
     // user request to admin upgrade tier
-    async upgradeTierReq(id:number,reqTier:string){
-        const user =  await this.userRepository.findOneBy({id});
+    async upgradeTierReq(id:number){
+        const {password,...user} =  await this.userRepository.findOneBy({id});
         if(!user) throw new NotFoundException("User not found");
-         const newTier =  this.userTierRepository.create({status:UserTierEnum.Pending,tier:reqTier});
+         const newTier =  this.userTierRepository.create({status:UserTierStatusEnum.Pending,tier:UserTierEnum.Premium});
          const saveTier = await this.userTierRepository.save(newTier);
          user.tier = saveTier;
-         return this.userRepository.save(user)
+         return new UserDto(await this.userRepository.save(user))
     }
 
 
@@ -56,12 +57,13 @@ export class UserService {
     upgradeTierList(){
        return  this.userRepository.createQueryBuilder('user')
        .leftJoinAndSelect('user.tier', 'tier')
-       .where('tier.id IS NOT NULL') 
+   
+       .where('tier.status IS NOT NULL AND tier.status != :status', { status: 'not' })
        .getMany();;
     }
 
 
-    async upgradeTierRes(id:number,status:UserTierEnum){
+    async upgradeTierRes(id:number,status:UserTierStatusEnum){
         const user =  await this.userRepository.find({where:{id},relations:["tier"]});
      
         if(!user) throw new NotFoundException("User not found");

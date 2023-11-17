@@ -1,5 +1,4 @@
 import { Body, Controller,Param,ParseIntPipe,Post,Get,Put, UseGuards,Request } from '@nestjs/common';
-import { userDto } from './dto/userDto';
 import { UserService } from './user.service';
 import { UserRole } from 'src/entity/enum/user_role.enum';
 import { Roles } from '../auth/roles.docorator';
@@ -18,7 +17,7 @@ export class UserController {
     @UseGuards(JwtGuard,RolesGuard)
     @Post(":id/upgradeReq")
     upgradeTierReq(@Param("id",ParseIntPipe) id:number, @Body() body:any){
-        return this.userService.upgradeTierReq(id,body.tier)
+        return this.userService.upgradeTierReq(id)
     }
 
   

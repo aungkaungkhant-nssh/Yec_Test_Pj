@@ -1,4 +1,4 @@
-import { Controller, Post,Body, Delete, Param, ParseIntPipe,Get, UseGuards } from '@nestjs/common';
+import { Controller, Post,Body, Delete, Param, ParseIntPipe,Get, UseGuards,Req } from '@nestjs/common';
 import { ChapterService } from './chapter.service';
 import { chapterDto } from './dto/chapterDto';
 import { UserRole } from 'src/entity/enum/user_role.enum';
@@ -12,9 +12,12 @@ export class ChapterController {
         private chapterService:ChapterService
     ){}
 
+    // @Roles(UserRole.ADMIN)
+    @UseGuards(JwtGuard)
     @Get("/book/:bookId")
-    getChapters(@Param("bookId",ParseIntPipe) bookId:number){
-        return this.chapterService.getChapters(bookId);
+    getChapters(@Param("bookId",ParseIntPipe) bookId:number,@Req() req:any){
+    
+          return this.chapterService.getChapters(bookId,req.user);
     }
 
 

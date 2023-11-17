@@ -4,25 +4,35 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as argon2 from "argon2";
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
+import { CreateUserDto, UserDto } from '../user/dto/user.dto';
+import { UserTier } from 'src/entity/userTier.entity';
+
 @Injectable()
 export class AuthService {
     constructor(
         private jwtService: JwtService,
         @InjectRepository(User)
         private userRepository: Repository<User>,
+        @InjectRepository(UserTier)
+        private userTierRepository:Repository<UserTier>
     ){
 
     }
-    async signUp(email:string,password:string){
-    
-        const hashPassword = await  argon2.hash(password);
-        const newUser =  this.userRepository.create({email:email,password:hashPassword});
-        return this.userRepository.save(newUser)
+    async signUp(userDto:CreateUserDto){
+        const hashPassword = await  argon2.hash(userDto.password);
+        let newUser =  this.userRepository.create({email:userDto.email,password:hashPassword});
+        let {password,...saveUser} =  await this.userRepository.save(newUser);
+        const newTier = this.userTierRepository.create()
+        await this.userTierRepository.save(newTier);
+        saveUser.tier = newTier;
+        await this.userRepository.save(saveUser)
+        return new UserDto(saveUser)
      }
 
      async signIn(email:string,password:string){
         const user = await this.userRepository.findOneBy({email})
         if(!user) throw new UnauthorizedException();
+        
         const isMatchPassword=  await argon2.verify(user.password,password);
 
         if(!isMatchPassword) throw new UnauthorizedException();

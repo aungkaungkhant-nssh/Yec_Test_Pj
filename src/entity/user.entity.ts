@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { UserTier } from './userTier.entity';
 import { UserRole } from './enum/user_role.enum';
-import { Exclude } from 'class-transformer';
+
 
 @Entity()
 export class User{
@@ -16,7 +16,10 @@ export class User{
     @JoinColumn()
     tier: UserTier;
 
-  
+    @Column()
+    password: string;
+
+    
     @Column({
         type:"enum",
         enum:UserRole, 
@@ -24,12 +27,9 @@ export class User{
     })
     roles:UserRole
 
-    @Exclude()
-    password: string;
+  
 
-    constructor(partial: Partial<User>) {
-        Object.assign(this, partial);
-      }
+
   
 }
 

@@ -20,7 +20,6 @@ export class BookService {
       if(author) queryBuilder.where("books.author Like :searchTerm",{ searchTerm: `%${author}%` })
 
       const [books,total]  = await queryBuilder
-      .leftJoinAndSelect("books.chapters","chapter")
       .skip((parseInt(page) - 1) * parseInt(page))
       .take(+limit)
      

@@ -10,10 +10,11 @@ import { JwtGuard } from './jwt.guard';
 import { PassportModule } from '@nestjs/passport';
 
 import { JwtStrategy } from './jwt.strategy';
+import { UserTier } from 'src/entity/userTier.entity';
 @Module({
   imports:[
     PassportModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User,UserTier]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

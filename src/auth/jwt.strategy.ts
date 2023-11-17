@@ -21,10 +21,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+
     const user =await this.userRepository.findOne({
       where:{
-        id:payload.id
-      }
+        id:payload.sub
+      },
+      relations:["tier"]
     })
     delete user.password
     return user;
