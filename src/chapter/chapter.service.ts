@@ -21,7 +21,7 @@ export class ChapterService {
       const book = await this.bookService.getBook(bookId);
    
       const bookAndUserPremium = user.roles === "admin" ? true :  book.free_status===FreeStatusEnum.Free || (book.free_status === FreeStatusEnum.Premium && user.tier.tier === UserTierEnum.Premium && user.tier.status === UserTierStatusEnum.Accept);
-      console.log(bookAndUserPremium)
+
       if(bookAndUserPremium){
         return await this.chapterRepository.find({
           where: {

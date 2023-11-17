@@ -21,12 +21,12 @@ export class AuthService {
     async signUp(userDto:CreateUserDto){
         const hashPassword = await  argon2.hash(userDto.password);
         let newUser =  this.userRepository.create({email:userDto.email,password:hashPassword});
-        let {password,...saveUser} =  await this.userRepository.save(newUser);
+        let saveUser =  await this.userRepository.save(newUser);
         const newTier = this.userTierRepository.create()
         await this.userTierRepository.save(newTier);
         saveUser.tier = newTier;
         await this.userRepository.save(saveUser)
-        return new UserDto(saveUser)
+        return saveUser
      }
 
      async signIn(email:string,password:string){

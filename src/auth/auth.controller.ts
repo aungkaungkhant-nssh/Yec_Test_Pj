@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller,Post, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller,Post, SerializeOptions, UseInterceptors } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/user.dto';
@@ -13,6 +13,10 @@ export class AuthController {
 
 
     @Post("/signup")
+    @UseInterceptors(ClassSerializerInterceptor)
+    @SerializeOptions({
+        groups:["GROUP_ALL_USERS"]
+    })
     signUp(@Body() userDto:CreateUserDto){
      return  this.authService.signUp(userDto)  
     }
